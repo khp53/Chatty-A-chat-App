@@ -35,10 +35,11 @@ class AuthMethods {
   }
 
   Future resetPassword(String email) async {
-    try{
+    try {
       return await _auth.sendPasswordResetEmail(email: email);
-    }catch(e){
-      print(e);
+    } catch (e) {
+      print(e.toString());
+      return null;
     }
   }
 
@@ -49,4 +50,38 @@ class AuthMethods {
       print(e);
     }
   }
+
+  // Future<User> signInWithGoogle(BuildContext context) async {
+//   //   final GoogleAuthCredential _googleSignIn = new GoogleAuthCredential();
+//   //
+//   //   final GoogleSignInAccount googleSignInAccount =
+//   //   await _googleSignIn.signIn();
+//   //   final GoogleSignInAuthentication googleSignInAuthentication =
+//   //   await googleSignInAccount.authentication;
+//   //
+//   //   final AuthCredential credential = GoogleAuthProvider.getCredential(
+//   //       idToken: googleSignInAuthentication.idToken,
+//   //       accessToken: googleSignInAuthentication.accessToken);
+//   //
+//   //   AuthResult result = await _auth.signInWithCredential(credential);
+//   //   FirebaseUser userDetails = result.user;
+//   //
+//   //   if (result == null) {
+//   //   } else {
+//   //     Navigator.push(context, MaterialPageRoute(builder: (context) => Chat()));
+//   //   }
+//   // }
+//   //
+//   // Future signUpWithEmailAndPassword(String email, String password) async {
+//   //   try {
+//   //     AuthResult result = await _auth.createUserWithEmailAndPassword(
+//   //         email: email, password: password);
+//   //     FirebaseUser user = result.user;
+//   //     return _userFromFirebaseUser(user);
+//   //   } catch (e) {
+//   //     print(e.toString());
+//   //     return null;
+//   //   }
+//   // }
+
 }

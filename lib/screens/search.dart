@@ -39,31 +39,14 @@ class _SearchScreenScreenState extends State<SearchScreen> {
     }
   }
 
-  createChatRoomAndStartChat(String userName){
-    if (userName != Constants.myName){
-      String chatRoomId = getChatRoomId(userName, Constants.myName);
-      List<String> users = [userName, Constants.myName];
-
-      Map<String, dynamic> chatRoomMap = {
-        "users" : users,
-        "chatRoomId" : chatRoomId,
-      };
-      database.createChatRoom(chatRoomId, chatRoomMap);
-      Navigator.push(context, MaterialPageRoute(
-          builder: (context) => ConversationScreen()
-      ));
-    }else{
-      return null;
-    }
-  }
-
-  
   Widget searchList(){
     return searchSnapshot != null ? ListView.builder(
       shrinkWrap: true,
       itemCount: searchSnapshot.docs.length,
       itemBuilder: (context, index){
         return searchTile(
+          searchSnapshot.docs[index].data()["img"],
+          searchSnapshot.docs[index].data()["img2"],
           searchSnapshot.docs[index].data()["name"],
           searchSnapshot.docs[index].data()["email"],
         );
@@ -71,44 +54,80 @@ class _SearchScreenScreenState extends State<SearchScreen> {
     ) : Center(child: Text("Searched Users Will Show Here", style: textStyle(16),));
   }
 
-  Widget searchTile(String userName, String userEmail){
-    return Card(
-      margin: EdgeInsets.symmetric(horizontal: 20),
-      color: Color(0xff222222),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
-        child: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(userName, style: textStyle(17),),
-                  SizedBox(height: 5,),
-                  Text(userEmail, style: textStyle(12),),
-                ],
+  createChatRoomAndStartChat(String userName, String img, String img2){
+
+      List<String> users = [Constants.myName, userName];
+      String chatRoomId = getChatRoomId(Constants.myName, userName);
+
+      Map<String, dynamic> chatRoomMap = {
+        "users" : users,
+        "chatRoomId" : chatRoomId,
+        "img" : img,
+        "img2" : Constants.myImg,
+      };
+      database.createChatRoom(chatRoomMap, chatRoomId);
+      Navigator.push(context, CupertinoPageRoute(
+          builder: (context) => ConversationScreen(chatRoomId: chatRoomId, userName: userName, img: img, img2: img2)
+      ));
+
+  }
+
+
+  Widget searchTile(String img, String img2, String userName, String userEmail){
+    return Padding(
+        padding: const EdgeInsets.only(bottom: 5),
+        child: Card(
+          margin: EdgeInsets.symmetric(horizontal: 20),
+          color: Color(0xff222222),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundImage: NetworkImage(img),
+                backgroundColor: Colors.grey[900],
+              ),
+              title: Text(userName, style: textStyle(17),),
+              subtitle: Text(userEmail, style: textStyle(12),),
+              trailing: GestureDetector(
+                onTap: (){
+                  if (userName != Constants.myName){
+                    createChatRoomAndStartChat(userName, img, img2);
+                  }else{
+                    return showDialog(
+                        context: context,
+                        builder: (BuildContext context){
+                          return AlertDialog(
+                            backgroundColor: Colors.grey[900],
+                            title: Text("Opps!", style: textStyle(20),),
+                            content: Text("You cannot send message to yourself!", style: textStyle(16),),
+                            actions: [
+                              FlatButton(
+                                child: Text("Close"),
+                                onPressed: (){
+                                  Navigator.of(context).pop();
+                                },
+                              )
+                            ],
+                          );
+                        }
+                    );
+                  }
+                  searchController.clear();
+                },
+                child: Container(
+                  decoration: buttonSignInUP(),
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Text("Chat!", style: textStyle(16),),
+                ),
               ),
             ),
-            Spacer(),
-            GestureDetector(
-              onTap: (){
-                createChatRoomAndStartChat(userName);
-              },
-              child: Container(
-                decoration: buttonSignInUP(),
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Text("Chat!", style: textStyle(16),),
-              ),
-            )
-          ],
+          ),
         ),
-      ),
     );
   }
 
   getChatRoomId(String a, String b) {
-    if(a.compareTo(b)>0) {
+    if(a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
       return "$b\_$a";
     } else {
       return "$a\_$b";
@@ -124,6 +143,7 @@ class _SearchScreenScreenState extends State<SearchScreen> {
   }
   getUserInfo() async{
     Constants.myName = await HelperFunctions.getUserNameSharedPreference();
+    Constants.myImg = await HelperFunctions.getUserImgSharedPreference();
     setState(() {
 
     });
@@ -139,17 +159,35 @@ class _SearchScreenScreenState extends State<SearchScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 5, 20, 0),
               child: TextFormField(
+                textInputAction: TextInputAction.search,
+                onEditingComplete: (){
+                  initiateSearch();
+                },
                 controller: searchController,
                 style: textStyle(16),
                 decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    onPressed: (){
-                      initiateSearch();
-                    },
-                    icon: Icon(
-                      Icons.search,
-                      color: Colors.white54,
+                  suffixIcon: Container(
+                    width: MediaQuery.of(context).size.width / 6,
+                    height: MediaQuery.of(context).size.height / 12.5,
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white54),
+                      color: Color(0xFF222222),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(0),
+                        topRight: Radius.circular(2),
+                        bottomLeft: Radius.circular(0),
+                        bottomRight: Radius.circular(2),
+                      )
                     ),
+                    child: IconButton(
+                        onPressed: (){
+                          initiateSearch();
+                        },
+                        icon: Icon(
+                          Icons.search,
+                          color: Colors.white,
+                        ),
+                      ),
                   ),
                   focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.white)

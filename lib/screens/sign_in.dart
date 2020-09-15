@@ -3,11 +3,12 @@ import 'package:chatty/services/auth.dart';
 import 'package:chatty/services/database.dart';
 import 'package:chatty/widgets/widget.dart';
 import 'package:chatty/wrapper/state_management.dart';
-import 'package:chatty/wrapper/wrapper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../main.dart';
 
 class SignIn extends StatefulWidget {
   final Function toggle;
@@ -57,7 +58,28 @@ class _SignInState extends State<SignIn> {
         } else {
           setState(() {
             isLoading = false;
-            //show snackbar
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    backgroundColor: Color(0xff121212),
+                    title: Text("Oops!", style: textStyle(23),),
+                    content: Text("Invalid Email or Password! Enter correct Email & Password and try again!",
+                      style: textStyle(16),
+                    ),
+                    actions: [
+                      FlatButton(
+                        child: Text("OK"),
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            CupertinoPageRoute(builder: (context) => MyApp()),
+                          );
+                        },
+                      )
+                    ],
+                  );
+                });
           });
         }
       });
@@ -108,12 +130,17 @@ class _SignInState extends State<SignIn> {
                       SizedBox(
                         height: 15,
                       ),
-                      Container(
-                        alignment: Alignment.centerRight,
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        child: Text(
-                          "Forgot Password?",
-                          style: textStyle(17),
+                      GestureDetector(
+                        onTap: (){
+                          authMethods.resetPassword(FirebaseAuth.instance.currentUser.email);
+                        },
+                        child: Container(
+                          alignment: Alignment.centerRight,
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: Text(
+                            "Forgot Password?",
+                            style: textStyle(17),
+                          ),
                         ),
                       ),
                       SizedBox(
@@ -185,7 +212,7 @@ class _SignInState extends State<SignIn> {
                         ],
                       ),
                       SizedBox(
-                        height: 40,
+                        height: 60,
                       )
                     ],
                   ),

@@ -1,7 +1,9 @@
+import 'package:chatty/main.dart';
 import 'package:chatty/services/auth.dart';
 import 'package:chatty/services/database.dart';
 import 'package:chatty/widgets/widget.dart';
 import 'package:chatty/wrapper/state_management.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'chat_room_screen.dart';
@@ -36,6 +38,7 @@ class _SignUpState extends State<SignUp> {
           .then((val){
             if (val != null){
               Map<String, String> userInfoMap = {
+                "img" : "https://firebasestorage.googleapis.com/v0/b/chatty-db309.appspot.com/o/default.png?alt=media&token=ea8520f2-88d9-4bd5-bc8a-8fdc230d4978",
                 "name" : userNameTextEditingController.text,
                 "email" : emailTextEditingController.text,
               };
@@ -44,9 +47,35 @@ class _SignUpState extends State<SignUp> {
               HelperFunctions.saveUserLoggedInSharedPreference(true);
               HelperFunctions.saveUserNameSharedPreference(userNameTextEditingController.text);
               HelperFunctions.saveUserEmailSharedPreference(emailTextEditingController.text);
-              Navigator.pushReplacement(context, MaterialPageRoute(
+              Navigator.pushReplacement(context, CupertinoPageRoute(
                   builder: (context) => ChatRoom()
               ));
+            }else {
+              setState(() {
+                isLoading = false;
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        backgroundColor: Color(0xff121212),
+                        title: Text("Oops!", style: textStyle(23),),
+                        content: Text("The email address is already in use by another account!",
+                          style: textStyle(17),
+                        ),
+                        actions: [
+                          FlatButton(
+                            child: Text("OK"),
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                CupertinoPageRoute(builder: (context) => MyApp()),
+                              );
+                            },
+                          )
+                        ],
+                      );
+                    });
+              });
             }
       });
     }

@@ -1,12 +1,13 @@
 import 'package:chatty/main.dart';
 import 'package:chatty/services/auth.dart';
-import 'package:chatty/wrapper/wrapper.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 AuthMethods _authMethods = AuthMethods();
 
 Widget appBarMain(BuildContext context){
   return AppBar(
+    centerTitle: true,
     elevation: 0,
     title: Text(
       "Chatty!",
@@ -21,6 +22,7 @@ Widget appBarMain(BuildContext context){
 
 Widget appBarChat(BuildContext context){
   return AppBar(
+    centerTitle: true,
     elevation: 0,
     title: Text(
       "Chatty!",
@@ -34,7 +36,7 @@ Widget appBarChat(BuildContext context){
       GestureDetector(
         onTap: (){
           _authMethods.signOut();
-          Navigator.pushReplacement(context, MaterialPageRoute(
+          Navigator.pushReplacement(context, CupertinoPageRoute(
               builder: (context) => MyApp()
           ));
         },
@@ -65,9 +67,32 @@ InputDecoration textInputDecoration(String labelText){
   );
 }
 
+InputDecoration textInputDecorationProfile(String text){
+  return InputDecoration(
+    focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.white)
+    ),
+    enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.white54)
+    ),
+    hintText: text,
+    hintStyle: TextStyle(
+      color: Colors.white54,
+    ),
+  );
+}
+
 TextStyle textStyle(double fs){
   return TextStyle(
     color: Colors.white,
+    fontFamily: "ProductSans",
+    fontSize: fs,
+  );
+}
+
+TextStyle textStyleTime(double fs){
+  return TextStyle(
+    color: Colors.white54,
     fontFamily: "ProductSans",
     fontSize: fs,
   );
