@@ -1,16 +1,16 @@
-# chatty
+# Chatty!
 
-A chat app Flutter application.
+A Firebase Flutter instant messaging application.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+Chatty is a chat app made using Flutter and Firebase.
+It has real-time chatting functionalities,
+searching users via user name,
+beautiful dark ui,
+state management with shared preferences,
+firebase email and google sign in authentication!
 
-A few resources to get you started if this is your first Flutter project:
+## Screen Caps
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![alt text](https://github.com/khp53/Chatty-A-chat-App/blob/master/assets/photo6271478789007584034.jpg?raw=true)
